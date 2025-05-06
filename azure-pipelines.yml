@@ -1,0 +1,24 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  imageName: 'your-dockerhub-username/auth-service'
+
+steps:
+- checkout: self
+
+- task: Docker@2
+  inputs:
+    containerRegistry: '<docker-hub-service-connection>'
+    repository: '$(imageName)'
+    command: 'buildAndPush'
+    Dockerfile: 'auth-service/Dockerfile'
+    tags: 'latest'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: 'infra-scripts/k8s'
+    artifact: 'k8s-manifests'
